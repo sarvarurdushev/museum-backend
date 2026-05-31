@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Museum AI Guide Demo</title>
+    <style>
+        body { 
+            font-family: 'Georgia', serif; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            
+            /* UPDATED: High-resolution museum hall exhibition gallery background */
+            background: #111116 url('https://images.unsplash.com/photo-1566121315132-d3a5e9799810?q=80&w=1920') no-repeat center center fixed;
+            background-size: cover;
+            
+            margin: 0;
+            padding: 20px;
+            color: #f5f5f7;
+        }
+
+        /* Gold gradient headers */
+        h2 {
+            font-size: 2.2rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 10px;
+            
+            /* 1. Define the luxury background gradient */
+            background: linear-gradient(135deg, #ffe066 0%, #d4af37 50%, #aa7c11 100%);
+            
+            /* 2. Prefixed property for Chrome, Safari, Edge, and iOS compatibility */
+            -webkit-background-clip: text;
+            
+            /* 3. Standard property for future-proofing and absolute compatibility */
+            background-clip: text;
+            
+            /* 4. Make the default text color transparent so the background shines through */
+            -webkit-text-fill-color: transparent;
+            color: transparent; /* Standard text color fallback */
+            
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+
+        /* Gold theme dropdown menu selector */
+        select {
+            padding: 10px 20px;
+            background: rgba(20, 20, 25, 0.95);
+            border: 2px solid #d4af37;
+            color: #ffe066;
+            font-family: inherit;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+            outline: none;
+        }
+        select option {
+            background: #1c1c22;
+            color: #ffe066;
+        }
+
+        /* Chat box container with sleek dark translucent frosted glass effect */
+        #chat-box { 
+            width: 600px; 
+            height: 600px; 
+            background: rgba(18, 18, 24, 0.85); 
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 2px solid #d4af37;
+            border-radius: 15px; 
+            padding: 20px; 
+            overflow-y: auto; 
+            box-shadow: 0 15px 35px rgba(0,0,0,0.7), inset 0 0 15px rgba(212,175,55,0.1); 
+        }
+
+        /* Message bubble styles */
+        .msg { 
+            margin: 15px 0; 
+            padding: 15px; 
+            border-radius: 12px; 
+            max-width: 80%; 
+            line-height: 1.5;
+            font-size: 1.05rem;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        }
+        
+        /* User side: Clean charcoal and rich gold accent */
+        .user { 
+            background: rgba(40, 40, 50, 0.9); 
+            color: #fff; 
+            border-left: 4px solid #ffe066;
+            align-self: flex-end; 
+            margin-left: auto; 
+        }
+        
+        /* Bot side: Smooth dark luxury with warm off-white text */
+        .bot { 
+            background: rgba(25, 25, 35, 0.95); 
+            color: #f5f5f7; 
+            border-left: 4px solid #aa7c11;
+        }
+
+        /* Controls container matching the chat-box width */
+        .controls { 
+            margin-top: 20px; 
+            display: flex; 
+            gap: 10px; 
+            width: 640px; 
+        }
+
+        /* Premium Input text box */
+        input { 
+            padding: 14px; 
+            border-radius: 8px; 
+            background: rgba(15, 15, 20, 0.9);
+            border: 1px solid #aa7c11; 
+            color: #fff;
+            font-family: inherit;
+            font-size: 1rem;
+            flex-grow: 1; 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+            outline: none;
+            transition: border 0.3s;
+        }
+        input:focus {
+            border: 1px solid #ffe066;
+        }
+        input::placeholder {
+            color: #888;
+        }
+
+        /* Premium Luxury Metallic Buttons */
+        button { 
+            padding: 14px 24px; 
+            font-family: inherit;
+            font-size: 1rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #111; 
+            background: linear-gradient(135deg, #ffe066 0%, #d4af37 50%, #aa7c11 100%);
+            border: none; 
+            border-radius: 8px; 
+            cursor: pointer; 
+            box-shadow: 0 4px 15px rgba(212,175,55,0.3);
+            transition: all 0.2s ease;
+        }
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(212,175,55,0.5);
+            filter: brightness(1.1);
+        }
+        button:active {
+            transform: translateY(1px);
+        }
+
+        /* Distinctive stop button layout */
+        .btn-stop {
+            background: linear-gradient(135deg, #ff6b6b 0%, #dc3545 100%) !important;
+            color: white !important;
+            box-shadow: 0 4px 15px rgba(220,53,69,0.3) !important;
+        }
+        .btn-stop:hover {
+            box-shadow: 0 6px 20px rgba(220,53,69,0.5) !important;
+        }
+
+        /* Beacon scanning UI */
+        .beacon-section {
+            margin-top: 20px;
+            padding: 20px;
+            background: rgba(18, 18, 24, 0.85);
+            border: 2px solid #d4af37;
+            border-radius: 15px;
+            width: 600px;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+        }
+
+        .beacon-section h3 {
+            color: #ffe066;
+            margin-top: 0;
+        }
+
+        .beacon-list {
+            max-height: 200px;
+            overflow-y: auto;
+            margin-bottom: 15px;
+        }
+
+        .beacon-item {
+            background: rgba(40, 40, 50, 0.8);
+            padding: 12px;
+            margin: 8px 0;
+            border-left: 4px solid #d4af37;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .beacon-item:hover {
+            background: rgba(60, 60, 70, 0.9);
+            transform: translateX(5px);
+        }
+
+        .beacon-item.mapped {
+            border-left-color: #51cf66;
+        }
+
+        .beacon-name {
+            color: #ffe066;
+            font-weight: bold;
+        }
+
+        .beacon-address {
+            color: #aaa;
+            font-size: 0.85rem;
+        }
+
+        .beacon-signal {
+            color: #51cf66;
+            font-size: 0.9rem;
+        }
+
+        .beacon-exhibit {
+            color: #ffb347;
+            font-size: 0.9rem;
+            margin-top: 5px;
+        }
+
+        #scanStatus {
+            color: #ffe066;
+            margin-bottom: 10px;
+            min-height: 20px;
+        }
+
+        .btn-beacon {
+            padding: 12px 20px;
+            background: linear-gradient(135deg, #51cf66 0%, #40c057 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(81,207,102,0.3);
+        }
+
+        .btn-beacon:hover {
+            box-shadow: 0 6px 20px rgba(81,207,102,0.5);
+        }
+
+        .btn-beacon:disabled {
+            background: linear-gradient(135deg, #868e96 0%, #748089 100%);
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+
+        /* Styled scrollbar for beacon list */
+        .beacon-list::-webkit-scrollbar {
+            width: 6px;
+        }
+        .beacon-list::-webkit-scrollbar-track {
+            background: rgba(0,0,0,0.2);
+        }
+        .beacon-list::-webkit-scrollbar-thumb {
+            background: #aa7c11;
+            border-radius: 3px;
+        }
+        .beacon-list::-webkit-scrollbar-thumb:hover {
+            background: #d4af37;
+        }
+
+        /* Styled custom browser scrollbar inside the chatbox */
+        #chat-box::-webkit-scrollbar {
+            width: 8px;
+        }
+        #chat-box::-webkit-scrollbar-track {
+            background: rgba(0,0,0,0.2);
+        }
+        #chat-box::-webkit-scrollbar-thumb {
+            background: #aa7c11;
+            border-radius: 4px;
+        }
+        #chat-box::-webkit-scrollbar-thumb:hover {
+            background: #d4af37;
+        }
+    </style>
+</head>
+<body>
+    <h2>🏛️ Museum AI Exhibition Guide</h2>
+    
+    <select id="exhibit">
+        <option value="t-rex">T-Rex Exhibit</option>
+        <option value="rosetta-stone">Rosetta Stone</option>
+        <option value="mona-lisa">Mona Lisa</option>
+    </select>
+    
+    <div id="chat-box"></div>
+    
+    <div class="controls">
+        <input type="text" id="userInput" placeholder="Ask the exhibition guide..." />
+        <button onclick="sendMessage()">Send</button>
+        <button onclick="stopSpeaking()" class="btn-stop">Stop Voice</button>
+    </div>
+
+    <div class="beacon-section">
+        <h3>🔍 Nearby Beacons</h3>
+        <div id="scanStatus"></div>
+        <button onclick="scanBeacons()" id="scanBtn" class="btn-beacon">Scan for Beacons</button>
+        <div class="beacon-list" id="beaconList"></div>
+    </div>
+
+    <script>
+        // 1. Voice Output Engine
+        function speak(text) {
+            window.speechSynthesis.cancel(); 
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'en-US'; 
+            utterance.pitch = 1.0;    
+            utterance.rate = 1.0;     
+            window.speechSynthesis.speak(utterance);
+        }
+
+        // 2. Stop Voice Engine
+        function stopSpeaking() {
+            window.speechSynthesis.cancel();
+        }
+
+        // 3. Main Message Handler
+        async function sendMessage() {
+            const input = document.getElementById('userInput');
+            const chatBox = document.getElementById('chat-box');
+            const exhibit = document.getElementById('exhibit').value;
+            
+            if(!input.value) return;
+
+            // Render User Message
+            chatBox.innerHTML += `<div class="msg user">${input.value}</div>`;
+            const message = input.value;
+            input.value = '';
+
+            stopSpeaking(); 
+
+            try {
+                const response = await fetch('http://127.0.0.1:5000/chat', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        exhibit_id: exhibit,
+                        language: "English",
+                        message: message
+                    })
+                });
+
+                const data = await response.json();
+                
+                if (data && data.response) {
+                    // Display AI response and automatically voice it out
+                    chatBox.innerHTML += `<div class="msg bot">${data.response}</div>`;
+                    chatBox.scrollTop = chatBox.scrollHeight;
+                    speak(data.response); 
+                } else {
+                    chatBox.innerHTML += `<div class="msg bot" style="color: #ff6b6b;">Error: Invalid server response data.</div>`;
+                }
+
+            } catch (error) {
+                console.error("Error connecting:", error);
+                chatBox.innerHTML += `<div class="msg bot" style="color: #ff6b6b;">Error connecting to the guide server.</div>`;
+            }
+        }
+
+        // 4. BLE Beacon Scanning
+        async function scanBeacons() {
+            const scanBtn = document.getElementById('scanBtn');
+            const scanStatus = document.getElementById('scanStatus');
+            const beaconList = document.getElementById('beaconList');
+
+            scanBtn.disabled = true;
+            scanStatus.textContent = '🔄 Scanning for beacons...';
+            beaconList.innerHTML = '';
+
+            try {
+                const response = await fetch('http://127.0.0.1:5000/scan-beacons?timeout=5');
+                const data = await response.json();
+
+                if (data.mapped_exhibits && data.mapped_exhibits.length > 0) {
+                    scanStatus.textContent = `✅ Found ${data.mapped_exhibits.length} museum beacon(s)!`;
+                    
+                    // Show mapped exhibits first
+                    data.mapped_exhibits.forEach(beacon => {
+                        const beaconHTML = `
+                            <div class="beacon-item mapped" onclick="selectExhibitFromBeacon('${beacon.exhibit_id}')">
+                                <div class="beacon-name">🏛️ ${beacon.name}</div>
+                                <div class="beacon-address">📍 ${beacon.address}</div>
+                                <div class="beacon-signal">📊 Signal: ${beacon.rssi} dBm</div>
+                                <div class="beacon-exhibit">🎯 Exhibit: <strong>${beacon.exhibit_id.toUpperCase()}</strong></div>
+                            </div>
+                        `;
+                        beaconList.innerHTML += beaconHTML;
+                    });
+
+                    // Show other devices if found
+                    const otherDevices = data.beacons.filter(b => !b.is_museum_beacon);
+                    if (otherDevices.length > 0) {
+                        beaconList.innerHTML += `<div style="padding: 10px; color: #888; border-top: 1px solid #444; margin-top: 10px; font-size: 0.9rem;">Other devices found: ${otherDevices.length}</div>`;
+                        otherDevices.forEach(beacon => {
+                            const beaconHTML = `
+                                <div class="beacon-item" style="opacity: 0.6;">
+                                    <div class="beacon-name">${beacon.name}</div>
+                                    <div class="beacon-address">📍 ${beacon.address}</div>
+                                    <div class="beacon-signal">📊 Signal: ${beacon.rssi} dBm</div>
+                                </div>
+                            `;
+                            beaconList.innerHTML += beaconHTML;
+                        });
+                    }
+                } else if (data.beacons && data.beacons.length > 0) {
+                    scanStatus.textContent = `⚠️ Found ${data.total_detected} device(s), but none are mapped to exhibits`;
+                    
+                    data.beacons.forEach(beacon => {
+                        const beaconHTML = `
+                            <div class="beacon-item">
+                                <div class="beacon-name">${beacon.name}</div>
+                                <div class="beacon-address">📍 ${beacon.address}</div>
+                                <div class="beacon-signal">📊 Signal: ${beacon.rssi} dBm</div>
+                                <div class="beacon-signal" style="color: #ff6b6b;">⚠️ Not a museum beacon</div>
+                            </div>
+                        `;
+                        beaconList.innerHTML += beaconHTML;
+                    });
+                } else {
+                    scanStatus.textContent = '❌ No beacons found. Make sure your ESP32 beacons are powered on and broadcasting.';
+                }
+            } catch (error) {
+                console.error("Scan error:", error);
+                scanStatus.textContent = '❌ Error scanning for beacons. Make sure the server is running.';
+            }
+
+            scanBtn.disabled = false;
+        }
+
+        // 5. Auto-select exhibit when beacon is clicked
+        function selectExhibitFromBeacon(exhibitId) {
+            if (exhibitId) {
+                document.getElementById('exhibit').value = exhibitId;
+                // Scroll to chat box for better UX
+                document.getElementById('chat-box').scrollIntoView({ behavior: 'smooth' });
+                alert(`🏛️ Connected to: ${exhibitId.toUpperCase()}\n\nStart chatting with the museum guide!`);
+            }
+        }
+    </script>
+</body>
+</html>
